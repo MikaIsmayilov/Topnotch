@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Topnotch</string>
+    <key>CFBundleDisplayName</key>
+    <string>Topnotch</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.mike.topnotch</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>Topnotch</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Topnotch shows your upcoming calendar events in the notch panel.</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>Topnotch can show your reminders in the notch panel.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Topnotch uses your location to show local weather in the notch panel.</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Topnotch uses your location to show local weather in the notch panel.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Topnotch reads track info from Music and Spotify to show what's playing, and can control playback for you.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Topnotch shows a camera preview in the notch when you use the Mirror widget.</string>
+    <key>NSAppSleepDisabled</key>
+    <true/>
+</dict>
+</plist>

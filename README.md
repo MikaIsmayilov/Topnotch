@@ -29,16 +29,29 @@
 3. Eject the disk image and launch Topnotch from Applications.
 
 > [!IMPORTANT]
-> **First launch needs one extra step.** The app is ad-hoc signed and not notarized, so
-> macOS refuses to open it by double-click. Right-click the app and choose **Open**, then
-> confirm. Or run:
+> **First launch needs a few extra clicks.** The app is ad-hoc signed and not notarized,
+> so macOS blocks it the first time. This is expected — here's how to get past it:
+>
+> 1. Double-click **Topnotch**. macOS says it can't be opened. Click **Done**.
+> 2. Open  **System Settings → Privacy & Security**.
+> 3. **Scroll all the way down** to the **Security** section. You'll see
+>    *"Topnotch was blocked to protect your Mac."*
+> 4. Click **Open Anyway**, then authenticate with Touch ID or your password.
+> 5. Confirm **Open Anyway** once more in the dialog that follows.
+>
+> You only do this once. From then on Topnotch launches normally.
+>
+> On macOS 14 you can instead right-click the app and choose **Open** — that shortcut was
+> removed in macOS 15, which is why the steps above are the reliable path.
+>
+> Prefer the terminal? This does the same thing in one line:
 >
 > ```sh
 > xattr -dr com.apple.quarantine /Applications/Topnotch.app
 > ```
 >
-> This is the trade-off of not paying for an Apple Developer ID certificate. If you'd
-> rather not bypass Gatekeeper, [build it yourself](#build-from-source) instead.
+> This is all the trade-off of not paying for an Apple Developer ID certificate. If you'd
+> rather not bypass Gatekeeper at all, [build it yourself](#build-from-source) instead.
 
 ## Widgets
 

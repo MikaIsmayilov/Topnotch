@@ -1,10 +1,44 @@
-# Topnotch
+<div align="center">
 
-A dynamic notch app for the MacBook Pro. It draws a panel around the real camera cutout —
-collapsed it's a slim pill that reacts to what's happening; swipe down and it opens into a
-set of widgets.
+<img src="assets/banner.png" alt="Topnotch" width="100%">
+
+<br>
+
+[![Download](https://img.shields.io/github/v/release/MikaIsmayilov/Topnotch?style=for-the-badge&label=Download&color=8B5CF6)](https://github.com/MikaIsmayilov/Topnotch/releases/latest)
+[![macOS](https://img.shields.io/badge/macOS-14%2B-1a1628?style=for-the-badge)](https://github.com/MikaIsmayilov/Topnotch/releases/latest)
+[![License](https://img.shields.io/badge/License-MIT-1a1628?style=for-the-badge)](LICENSE)
+
+**Collapsed, it's a slim pill around the camera cutout that reacts to what's happening.**
+**Swipe down with two fingers and it opens into a set of widgets.**
+
+</div>
+
+<br>
+
+> [!NOTE]
+> Topnotch has **no Dock icon and no window** — it lives in the notch. After launching,
+> look for the pill at the top of your screen and swipe down on it. There's a menu bar
+> item for quitting.
 
 <!-- Add a screenshot here -->
+
+## Install
+
+1. Download **`Topnotch.dmg`** from the [latest release](https://github.com/MikaIsmayilov/Topnotch/releases/latest).
+2. Open it and drag **Topnotch** onto the **Applications** shortcut.
+3. Eject the disk image and launch Topnotch from Applications.
+
+> [!IMPORTANT]
+> **First launch needs one extra step.** The app is ad-hoc signed and not notarized, so
+> macOS refuses to open it by double-click. Right-click the app and choose **Open**, then
+> confirm. Or run:
+>
+> ```sh
+> xattr -dr com.apple.quarantine /Applications/Topnotch.app
+> ```
+>
+> This is the trade-off of not paying for an Apple Developer ID certificate. If you'd
+> rather not bypass Gatekeeper, [build it yourself](#build-from-source) instead.
 
 ## Widgets
 
@@ -30,9 +64,12 @@ It only grows as wide as it needs to be, and surfaces things without being opene
 
 ## Gestures
 
-- **Two-finger swipe down** on the notch to open, **swipe up** to close
-- **Swipe left/right** on the collapsed pill to change tracks
-- Click also works; hover-to-open is off by default and can be enabled in Settings
+| Gesture | Action |
+|---|---|
+| Two-finger swipe **down** on the notch | Open |
+| Two-finger swipe **up** | Close |
+| Swipe **left / right** on the collapsed pill | Previous / next track |
+| Click | Also opens — hover-to-open is off by default, enable it in Settings |
 
 ## Requirements
 
@@ -41,27 +78,18 @@ It only grows as wide as it needs to be, and surfaces things without being opene
   display scaling, not your model. On a screen that reports no cutout (an external
   display, or a Mac without a notch) it falls back to a 200pt pill sized to that screen's
   own menu bar.
-- macOS 14 or later
+- macOS 14 or later.
 
-## Install
+## Permissions
 
-1. Download `Topnotch.dmg` from the [latest release](https://github.com/MikaIsmayilov/Topnotch/releases/latest).
-2. Open it and drag **Topnotch** onto the **Applications** shortcut.
-3. Eject the disk image and launch Topnotch from Applications.
+Granted on first use, all optional — the relevant widget explains itself if you decline:
 
-Topnotch has no Dock icon or window — it lives in the notch. Look for the pill at the top
-of your screen, and there's a menu bar item for quitting. Swipe down on the notch to open it.
-
-**First launch needs one extra step.** The app is **ad-hoc signed**, not notarized, so
-macOS will refuse to open it by double-click. Either right-click the app and choose
-**Open**, then confirm — or run:
-
-```sh
-xattr -dr com.apple.quarantine /Applications/Topnotch.app
-```
-
-This is the tradeoff of not paying for an Apple Developer ID certificate. If you'd rather
-not bypass Gatekeeper, build it yourself instead.
+| | |
+|---|---|
+| **Calendar** | The calendar widget and meeting countdown |
+| **Location** | Weather |
+| **Camera** | The mirror |
+| **Automation** | Reading and controlling Spotify / Music playback |
 
 ## Build from source
 
@@ -73,26 +101,24 @@ cd Topnotch
 ./scripts/make_dmg.sh     # build the drag-to-Applications disk image
 ```
 
-The app icon is drawn in code by `scripts/make_icon.swift`. `Resources/AppIcon.icns` is
-committed, so you only need to regenerate it if you change the artwork:
-
-```sh
-./scripts/make_icon.sh    # re-render every size and recompile the .icns
-```
-
 `build_app.sh` signs with the first code-signing identity it finds in your keychain, and
 falls back to ad-hoc. Signing with a stable identity matters during development: an
 ad-hoc signature is derived from the code hash, so it changes on every build and macOS
 re-asks for every permission each time.
 
-## Permissions
+### Artwork
 
-Granted on first use, all optional — the relevant widget explains itself if you decline:
+The app icon and the banner above are both drawn in code — no binary design files. The
+generated `Resources/AppIcon.icns` and `assets/banner.png` are committed, so you only
+need these if you change the artwork:
 
-- **Calendar** for the calendar widget and meeting countdown
-- **Location** for weather
-- **Camera** for the mirror
-- **Automation** (Spotify / Music) to read and control playback
+```sh
+./scripts/make_icon.sh                                   # re-render every icon size, recompile the .icns
+swift scripts/make_banner.swift assets/banner.png        # re-render the banner
+```
+
+Each icon size is rendered natively from the vector geometry rather than downsampled from
+a single master, which is what keeps the 16pt and 32pt variants legible.
 
 ## Notes and limitations
 

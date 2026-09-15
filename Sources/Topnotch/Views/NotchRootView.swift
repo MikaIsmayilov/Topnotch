@@ -12,13 +12,16 @@ import SwiftUI
 struct NotchRootView: View {
     @ObservedObject var viewModel: NotchViewModel
 
-    private var visibleSize: CGSize {
-        viewModel.isExpanded ? viewModel.expandedSize : viewModel.collapsedSize
+    private var visibleSize: CGSize { viewModel.drawnSize }
+
+    /// Hovering rounds the bottom corners a little further as the pill swells, so it
+    /// reads as puffing outward rather than just getting taller.
+    private var bottomRadius: CGFloat {
+        if viewModel.isExpanded { return 22 }
+        return viewModel.isHovering ? 15 : 12
     }
 
-    private var bottomRadius: CGFloat {
-        viewModel.isExpanded ? 22 : 12
-    }
+    private var isPopped: Bool { viewModel.isHovering && !viewModel.isExpanded }
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -51,9 +54,18 @@ struct NotchRootView: View {
             .overlay(
                 NotchShape(bottomRadius: bottomRadius)
                     .stroke(
-                        viewModel.isDropTargeted ? Theme.defaultAccent : Color.white.opacity(0.07),
+                        viewModel.isDropTargeted
+                            ? Theme.defaultAccent
+                            : Color.white.opacity(isPopped ? 0.18 : 0.07),
                         lineWidth: viewModel.isDropTargeted ? 1.5 : 1
                     )
+            )
+            // The rim brightening alone is easy to miss against the bezel, so the swell
+            // also casts a faint glow to separate the pill from the black around it.
+            .shadow(
+                color: Color.black.opacity(isPopped ? 0.55 : 0),
+                radius: isPopped ? 12 : 0,
+                y: isPopped ? 4 : 0
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

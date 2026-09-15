@@ -13,6 +13,7 @@ final class SettingsStore: ObservableObject {
     private let defaults = UserDefaults.standard
 
     @Published var openOnHover: Bool { didSet { defaults.set(openOnHover, forKey: "openOnHover") } }
+    @Published var hoverHighlight: Bool { didSet { defaults.set(hoverHighlight, forKey: "hoverHighlight") } }
     @Published var swipeSensitivity: Double { didSet { defaults.set(swipeSensitivity, forKey: "swipeSensitivity") } }
     @Published var showTimerInPill: Bool { didSet { defaults.set(showTimerInPill, forKey: "showTimerInPill") } }
     @Published var accentFromArtwork: Bool { didSet { defaults.set(accentFromArtwork, forKey: "accentFromArtwork") } }
@@ -28,6 +29,7 @@ final class SettingsStore: ObservableObject {
 
     init() {
         openOnHover = defaults.object(forKey: "openOnHover") as? Bool ?? false
+        hoverHighlight = defaults.object(forKey: "hoverHighlight") as? Bool ?? true
         swipeSensitivity = defaults.object(forKey: "swipeSensitivity") as? Double ?? 0.6
         showTimerInPill = defaults.object(forKey: "showTimerInPill") as? Bool ?? true
         accentFromArtwork = defaults.object(forKey: "accentFromArtwork") as? Bool ?? true

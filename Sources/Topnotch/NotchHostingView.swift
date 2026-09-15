@@ -32,7 +32,7 @@ final class NotchHostingView: NSHostingView<NotchRootView> {
     override func hitTest(_ point: NSPoint) -> NSView? {
         guard let superview else { return super.hitTest(point) }
         let local = superview.convert(point, to: self)
-        let size = viewModel.isExpanded ? viewModel.expandedSize : viewModel.collapsedSize
+        let size = viewModel.drawnSize
         // Our visible shape is top-anchored; whether "top" is y = 0 or y = bounds.height
         // depends on whether this view is flipped, so check rather than assume.
         let visibleRect = NSRect(

@@ -13,6 +13,9 @@ struct SettingsView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 16) {
                 SettingsSection(title: "General") {
+                    SettingsRow(title: "Highlight on hover", subtitle: "Nudge the pill outward when the cursor reaches it") {
+                        Toggle("", isOn: $settings.hoverHighlight).settingsToggle()
+                    }
                     SettingsRow(title: "Open on hover", subtitle: "Expand when the cursor rests on the notch") {
                         Toggle("", isOn: $settings.openOnHover).settingsToggle()
                     }

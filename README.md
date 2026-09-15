@@ -20,7 +20,13 @@
 > look for the pill at the top of your screen and swipe down on it. There's a menu bar
 > item for quitting.
 
-<!-- Add a screenshot here -->
+<div align="center">
+
+<img src="assets/screenshot.png" alt="The Topnotch panel open on the Music widget" width="100%">
+
+<sub>Swiped open on the Music widget — the rail on the left switches between widgets, and the gear opens Settings.</sub>
+
+</div>
 
 ## Install
 

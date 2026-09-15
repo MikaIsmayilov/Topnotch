@@ -125,6 +125,7 @@ final class NotchWindowController: NSObject {
         globalScrollMonitor = nil
         localScrollMonitor = nil
         resetGesture()
+        viewModel.setHovering(false)
         panel?.orderOut(nil)
         panel = nil
         hostingView = nil
@@ -155,11 +156,16 @@ final class NotchWindowController: NSObject {
         let mouse = NSEvent.mouseLocation
         let hitFrame = currentVisibleFrame().insetBy(dx: -6, dy: -6)
         guard viewModel.isExpanded else {
-            if viewModel.settings.openOnHover, hitFrame.contains(mouse) {
+            // Hit testing deliberately uses the un-swollen frame (see collapsedDrawnSize),
+            // so the pill growing under the cursor can't feed back into this test.
+            let hovering = hitFrame.contains(mouse)
+            viewModel.setHovering(hovering)
+            if viewModel.settings.openOnHover, hovering {
                 viewModel.expand()
             }
             return
         }
+        viewModel.setHovering(false)
         if hitFrame.contains(mouse) {
             collapseWorkItem?.cancel()
             collapseWorkItem = nil

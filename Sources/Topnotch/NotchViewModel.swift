@@ -55,6 +55,7 @@ final class NotchViewModel: ObservableObject {
     @Published var isDropTargeted = false
     @Published private(set) var notchSize = CGSize(width: 200, height: 32)
     @Published private(set) var collapsedFlank: CGFloat = NotchViewModel.idleFlank
+    @Published private(set) var isHovering = false
 
     /// Flanks are sized to whatever they actually have to show, so the pill never takes
     /// more width than its contents need. They stay symmetric because the panel is
@@ -67,8 +68,47 @@ final class NotchViewModel: ObservableObject {
     var notchWidth: CGFloat { notchSize.width }
     var stripHeight: CGFloat { notchSize.height }
 
+    /// How far the pill swells on hover. Small on purpose — this is a "you can touch
+    /// this" cue, not a state change; hovering deliberately does *not* open the panel.
+    static let hoverPopFlank: CGFloat = 5
+    static let hoverPopHeight: CGFloat = 4
+
+    /// The hover swell applies only while collapsed. Once the panel is open it's already
+    /// obviously interactive, and popping a 572pt panel would just look like a glitch.
+    private var hoverPopActive: Bool { isHovering && !isExpanded }
+
     var collapsedSize: CGSize {
         CGSize(width: notchSize.width + 2 * collapsedFlank, height: stripHeight)
+    }
+
+    /// The collapsed size actually drawn, including any hover swell. Hit testing stays on
+    /// `collapsedSize` so growing the pill can't re-trigger the hover test that caused it.
+    var collapsedDrawnSize: CGSize {
+        guard hoverPopActive else { return collapsedSize }
+        return CGSize(
+            width: collapsedSize.width + 2 * Self.hoverPopFlank,
+            height: collapsedSize.height + Self.hoverPopHeight
+        )
+    }
+
+    /// Single source of truth for what is actually on screen. Both the SwiftUI shape and
+    /// `NotchHostingView.hitTest` read this, so the clickable area always matches the
+    /// drawn one — including the hover swell.
+    var drawnSize: CGSize {
+        isExpanded ? expandedSize : collapsedDrawnSize
+    }
+
+    func setHovering(_ hovering: Bool) {
+        guard settings.hoverHighlight else {
+            if isHovering { isHovering = false }
+            return
+        }
+        guard hovering != isHovering else { return }
+        // Bouncier than open/close on purpose: it's a quick nudge, and the overshoot is
+        // what reads as a "pop" rather than a resize.
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.55)) {
+            isHovering = hovering
+        }
     }
 
     var expandedSize: CGSize {

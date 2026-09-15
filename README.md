@@ -36,16 +36,25 @@ It only grows as wide as it needs to be, and surfaces things without being opene
 
 ## Requirements
 
-- A MacBook Pro/Air with a notch (geometry is read from the display; falls back to the
-  14" cutout if the screen doesn't report one)
+- A MacBook Pro/Air with a notch. The cutout is measured from the display at runtime, so
+  it adapts to whatever scaled resolution you run — notch width is a function of your
+  display scaling, not your model. On a screen that reports no cutout (an external
+  display, or a Mac without a notch) it falls back to a 200pt pill sized to that screen's
+  own menu bar.
 - macOS 14 or later
 
 ## Install
 
-Download the latest release, unzip, and move `Topnotch.app` to `/Applications`.
+1. Download `Topnotch.dmg` from the [latest release](https://github.com/MikaIsmayilov/Topnotch/releases/latest).
+2. Open it and drag **Topnotch** onto the **Applications** shortcut.
+3. Eject the disk image and launch Topnotch from Applications.
 
-The app is **ad-hoc signed**, not notarized, so macOS will refuse to open it the first
-time. Either right-click the app and choose **Open**, then confirm — or run:
+Topnotch has no Dock icon or window — it lives in the notch. Look for the pill at the top
+of your screen, and there's a menu bar item for quitting. Swipe down on the notch to open it.
+
+**First launch needs one extra step.** The app is **ad-hoc signed**, not notarized, so
+macOS will refuse to open it by double-click. Either right-click the app and choose
+**Open**, then confirm — or run:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Topnotch.app
@@ -57,10 +66,18 @@ not bypass Gatekeeper, build it yourself instead.
 ## Build from source
 
 ```sh
-git clone <this repo>
-cd Notch
+git clone https://github.com/MikaIsmayilov/Topnotch.git
+cd Topnotch
 ./scripts/run.sh          # build, bundle, and launch
 ./scripts/release.sh      # build a distributable zip
+./scripts/make_dmg.sh     # build the drag-to-Applications disk image
+```
+
+The app icon is drawn in code by `scripts/make_icon.swift`. `Resources/AppIcon.icns` is
+committed, so you only need to regenerate it if you change the artwork:
+
+```sh
+./scripts/make_icon.sh    # re-render every size and recompile the .icns
 ```
 
 `build_app.sh` signs with the first code-signing identity it finds in your keychain, and
@@ -88,6 +105,10 @@ Granted on first use, all optional — the relevant widget explains itself if yo
 - There's no Focus/Do Not Disturb indicator. `INFocusStatusCenter` reports `false` on
   macOS 26 even when authorized with Focus sharing enabled, and the older
   `~/Library/DoNotDisturb` files no longer exist.
+- The app icon is drawn full-bleed because macOS 26 composites a legacy `.icns` into its
+  own rounded container — artwork carrying its own squircle ends up visibly nested inside
+  a second one. The cost is that on macOS 14 and 15, which apply no mask, the icon reads
+  with square corners.
 
 ## License
 

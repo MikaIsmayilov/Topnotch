@@ -4,6 +4,7 @@ import SwiftUI
 /// panel reads as composed blocks rather than one flat pane, and the progress bar lives
 /// at the bottom of its own card instead of hugging the artist name like an underline.
 struct MusicWidget: View {
+    @Environment(\.notchAccent) private var chosenAccent
     @ObservedObject var controller: MediaRemoteController
     var onOpenPlayer: () -> Void = {}
 
@@ -20,7 +21,7 @@ struct MusicWidget: View {
 
     var body: some View {
         if let info = controller.nowPlaying {
-            let accent = Color(nsColor: info.accent ?? NSColor(Theme.defaultAccent))
+            let accent = Color(nsColor: info.accent ?? NSColor(chosenAccent))
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
                     Button { openPlayer() } label: {

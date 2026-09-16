@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftUI
 
 enum TemperatureUnit: String, CaseIterable, Identifiable {
     case celsius, fahrenheit
@@ -17,12 +18,17 @@ final class SettingsStore: ObservableObject {
     @Published var swipeSensitivity: Double { didSet { defaults.set(swipeSensitivity, forKey: "swipeSensitivity") } }
     @Published var showTimerInPill: Bool { didSet { defaults.set(showTimerInPill, forKey: "showTimerInPill") } }
     @Published var accentFromArtwork: Bool { didSet { defaults.set(accentFromArtwork, forKey: "accentFromArtwork") } }
+    @Published var accentHex: String { didSet { defaults.set(accentHex, forKey: "accentHex") } }
     @Published var temperatureUnit: TemperatureUnit { didSet { defaults.set(temperatureUnit.rawValue, forKey: "temperatureUnit") } }
     @Published var focusMinutes: Int { didSet { defaults.set(focusMinutes, forKey: "focusMinutes") } }
     @Published var breakMinutes: Int { didSet { defaults.set(breakMinutes, forKey: "breakMinutes") } }
     @Published var enabledWidgets: Set<NotchTab> {
         didSet { defaults.set(enabledWidgets.map(\.rawValue).sorted(), forKey: "enabledWidgets") }
     }
+
+    /// The chosen accent. Artwork still wins over it while `accentFromArtwork` is on
+    /// and something is playing — this is what everything falls back to.
+    var accent: Color { Color(hex: accentHex) ?? Theme.defaultAccent }
 
     /// Swipe distance (points) needed to open/close. Sensitivity 0…1 maps to 80…20pt.
     var swipeThreshold: CGFloat { CGFloat(80 - swipeSensitivity * 60) }
@@ -33,6 +39,7 @@ final class SettingsStore: ObservableObject {
         swipeSensitivity = defaults.object(forKey: "swipeSensitivity") as? Double ?? 0.6
         showTimerInPill = defaults.object(forKey: "showTimerInPill") as? Bool ?? true
         accentFromArtwork = defaults.object(forKey: "accentFromArtwork") as? Bool ?? true
+        accentHex = defaults.string(forKey: "accentHex") ?? Theme.accentPresets[0]
         temperatureUnit = TemperatureUnit(rawValue: defaults.string(forKey: "temperatureUnit") ?? "") ?? .celsius
         focusMinutes = defaults.object(forKey: "focusMinutes") as? Int ?? 25
         breakMinutes = defaults.object(forKey: "breakMinutes") as? Int ?? 5

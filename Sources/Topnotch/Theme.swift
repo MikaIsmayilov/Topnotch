@@ -16,6 +16,42 @@ enum Theme {
     static let cardRadius: CGFloat = 12
 }
 
+extension Theme {
+    /// The swatches offered in Settings. Stored as hex so the choice survives in
+    /// UserDefaults and compares by identity — a round-tripped `Color` doesn't.
+    /// The first is the original built-in green, so "default" is always reachable.
+    static let accentPresets: [String] = [
+        "5CDB8F", "4FA8FF", "7C82FF", "C07CFF", "FF6FAE", "FF6B5E", "FF9E4D", "F5D14E",
+    ]
+}
+
+extension Color {
+    /// Six-digit RGB hex, no alpha. Returns nil on anything malformed so a corrupted
+    /// preference falls back to the built-in accent rather than rendering black.
+    init?(hex: String) {
+        let cleaned = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+        guard cleaned.count == 6, let value = UInt32(cleaned, radix: 16) else { return nil }
+        self.init(
+            red: Double((value >> 16) & 0xFF) / 255,
+            green: Double((value >> 8) & 0xFF) / 255,
+            blue: Double(value & 0xFF) / 255
+        )
+    }
+}
+
+/// The user's chosen accent, pushed down from the root so any widget can pick it up
+/// without being handed the settings store. Falls back to the built-in green.
+private struct NotchAccentKey: EnvironmentKey {
+    static let defaultValue = Theme.defaultAccent
+}
+
+extension EnvironmentValues {
+    var notchAccent: Color {
+        get { self[NotchAccentKey.self] }
+        set { self[NotchAccentKey.self] = newValue }
+    }
+}
+
 extension Font {
     static func ui(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight)

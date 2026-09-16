@@ -11,6 +11,15 @@ import SwiftUI
 /// container grows, like a curtain — so nothing inside squishes mid-animation.
 struct NotchRootView: View {
     @ObservedObject var viewModel: NotchViewModel
+    /// Observed directly rather than through `viewModel`: nested ObservableObjects
+    /// don't propagate, so picking a new accent wouldn't redraw anything until
+    /// something else happened to invalidate the view.
+    @ObservedObject var settings: SettingsStore
+
+    init(viewModel: NotchViewModel) {
+        self.viewModel = viewModel
+        self.settings = viewModel.settings
+    }
 
     private var visibleSize: CGSize { viewModel.drawnSize }
 
@@ -55,7 +64,7 @@ struct NotchRootView: View {
                 NotchShape(bottomRadius: bottomRadius)
                     .stroke(
                         viewModel.isDropTargeted
-                            ? Theme.defaultAccent
+                            ? settings.accent
                             : Color.white.opacity(isPopped ? 0.18 : 0.07),
                         lineWidth: viewModel.isDropTargeted ? 1.5 : 1
                     )
@@ -69,6 +78,7 @@ struct NotchRootView: View {
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .environment(\.notchAccent, settings.accent)
         .onTapGesture {
             if !viewModel.isExpanded {
                 viewModel.expand()

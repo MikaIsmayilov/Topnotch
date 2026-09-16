@@ -3,6 +3,8 @@ import EventKit
 
 /// Month grid on the left, the selected day's agenda on the right.
 struct CalendarWidget: View {
+    @Environment(\.notchAccent) private var accent
+
     @ObservedObject var manager: CalendarManager
 
     @State private var displayedMonth = Date()
@@ -121,7 +123,7 @@ struct CalendarWidget: View {
             .overlay(alignment: .bottom) {
                 if manager.hasEvents(on: day) {
                     Circle()
-                        .fill(isSelected ? Color.black.opacity(0.55) : Theme.defaultAccent)
+                        .fill(isSelected ? Color.black.opacity(0.55) : accent)
                         .frame(width: 3, height: 3)
                         .offset(y: 1)
                 }
@@ -158,7 +160,7 @@ struct CalendarWidget: View {
                         Button("Add an account…") { manager.openInternetAccountsSettings() }
                             .buttonStyle(.plain)
                             .font(.ui(10.5, .medium))
-                            .foregroundStyle(Theme.defaultAccent)
+                            .foregroundStyle(accent)
                             .padding(.top, 2)
                     }
                 }
@@ -209,7 +211,7 @@ struct CalendarWidget: View {
                     .foregroundStyle(.black)
                     .padding(.horizontal, 8)
                     .frame(height: 20)
-                    .background(Capsule().fill(Theme.defaultAccent))
+                    .background(Capsule().fill(accent))
                 }
                 .buttonStyle(.plain)
                 .help(join.absoluteString)

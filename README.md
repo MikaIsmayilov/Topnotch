@@ -125,20 +125,6 @@ falls back to ad-hoc. Signing with a stable identity matters during development:
 ad-hoc signature is derived from the code hash, so it changes on every build and macOS
 re-asks for every permission each time.
 
-### Artwork
-
-The app icon and the banner above are both drawn in code — no binary design files. The
-generated `Resources/AppIcon.icns` and `assets/banner.png` are committed, so you only
-need these if you change the artwork:
-
-```sh
-./scripts/make_icon.sh                                   # re-render every icon size, recompile the .icns
-swift scripts/make_banner.swift assets/banner.png        # re-render the banner
-```
-
-Each icon size is rendered natively from the vector geometry rather than downsampled from
-a single master, which is what keeps the 16pt and 32pt variants legible.
-
 ## Notes and limitations
 
 - Now playing works with **Spotify and Apple Music**. It reads them over AppleScript

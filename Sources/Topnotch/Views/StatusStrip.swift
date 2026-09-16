@@ -12,7 +12,7 @@ struct StatusStrip: View {
 
     private var accent: Color {
         guard settings.accentFromArtwork, let artworkAccent = media.nowPlaying?.accent else {
-            return Theme.defaultAccent
+            return settings.accent
         }
         return Color(nsColor: artworkAccent)
     }
@@ -81,7 +81,7 @@ struct StatusStrip: View {
 
     private func alertTint(_ alert: PillAlert) -> Color {
         switch alert {
-        case .pluggedIn: return Theme.defaultAccent
+        case .pluggedIn: return settings.accent
         case .unplugged(let level): return level <= 20 ? .orange : Theme.textPrimary
         case .bluetooth: return Theme.textPrimary
         }
@@ -116,7 +116,7 @@ struct StatusStrip: View {
         if viewModel.isDropTargeted, width > 30 {
             Image(systemName: "arrow.down.doc.fill")
                 .font(.ui(13, .semibold))
-                .foregroundStyle(Theme.defaultAccent)
+                .foregroundStyle(settings.accent)
                 .padding(.leading, 12)
                 .transition(.opacity)
         } else if let meeting = viewModel.meetingChip, width > 40 {

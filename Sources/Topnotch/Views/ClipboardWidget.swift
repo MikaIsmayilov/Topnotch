@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ClipboardWidget: View {
+    @Environment(\.notchAccent) private var accent
     @ObservedObject var store: ClipboardStore
     @State private var justCopied: UUID?
 
@@ -50,7 +51,7 @@ struct ClipboardWidget: View {
             HStack(spacing: 9) {
                 Image(systemName: copied ? "checkmark.circle.fill" : "doc.on.doc")
                     .font(.ui(10.5))
-                    .foregroundStyle(copied ? Theme.defaultAccent : Theme.textTertiary)
+                    .foregroundStyle(copied ? accent : Theme.textTertiary)
                     .frame(width: 14)
 
                 Text(item.preview)
@@ -62,7 +63,7 @@ struct ClipboardWidget: View {
 
                 Text(copied ? "Copied" : Self.relative(item.date))
                     .font(.ui(9.5))
-                    .foregroundStyle(copied ? Theme.defaultAccent : Theme.textTertiary)
+                    .foregroundStyle(copied ? accent : Theme.textTertiary)
                     .fixedSize()
             }
             .padding(.horizontal, 9)

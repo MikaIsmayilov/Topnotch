@@ -14,15 +14,15 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 16) {
                 SettingsSection(title: "General") {
                     SettingsRow(title: "Highlight on hover", subtitle: "Nudge the pill outward when the cursor reaches it") {
-                        Toggle("", isOn: $settings.hoverHighlight).settingsToggle()
+                        Toggle("", isOn: $settings.hoverHighlight).settingsToggle(tint: settings.accent)
                     }
                     SettingsRow(title: "Open on hover", subtitle: "Expand when the cursor rests on the notch") {
-                        Toggle("", isOn: $settings.openOnHover).settingsToggle()
+                        Toggle("", isOn: $settings.openOnHover).settingsToggle(tint: settings.accent)
                     }
                     SettingsRow(title: "Swipe sensitivity", subtitle: "How far a two-finger swipe has to travel") {
                         Slider(value: $settings.swipeSensitivity, in: 0...1)
                             .controlSize(.mini)
-                            .tint(Theme.defaultAccent)
+                            .tint(settings.accent)
                             .frame(width: 110)
                     }
                     SettingsRow(
@@ -37,20 +37,28 @@ struct SettingsView: View {
                                 launchAtLoginFailed = !ok
                                 launchAtLogin = LoginItem.isEnabled
                             }
-                        )).settingsToggle()
+                        )).settingsToggle(tint: settings.accent)
                     }
                 }
 
                 SettingsSection(title: "Notch") {
                     SettingsRow(title: "Show timer in pill", subtitle: "Countdown in the collapsed notch while running") {
-                        Toggle("", isOn: $settings.showTimerInPill).settingsToggle()
+                        Toggle("", isOn: $settings.showTimerInPill).settingsToggle(tint: settings.accent)
                     }
                     SettingsRow(
                         title: "Accent from album art",
-                        subtitle: "Tint the pill and player with the cover's colour",
+                        subtitle: "Tint the pill and player with the cover's colour"
+                    ) {
+                        Toggle("", isOn: $settings.accentFromArtwork).settingsToggle(tint: settings.accent)
+                    }
+                    SettingsRow(
+                        title: "Accent colour",
+                        subtitle: settings.accentFromArtwork
+                            ? "Used when nothing is playing"
+                            : "Used everywhere the panel highlights something",
                         divider: false
                     ) {
-                        Toggle("", isOn: $settings.accentFromArtwork).settingsToggle()
+                        AccentSwatches(selection: $settings.accentHex)
                     }
                 }
 
@@ -61,7 +69,7 @@ struct SettingsView: View {
                             symbol: tab.symbol,
                             divider: index < NotchTab.widgets.count - 1
                         ) {
-                            Toggle("", isOn: widgetBinding(for: tab)).settingsToggle()
+                            Toggle("", isOn: widgetBinding(for: tab)).settingsToggle(tint: settings.accent)
                         }
                     }
                 }
@@ -86,7 +94,7 @@ struct SettingsView: View {
                         Button("Open") { calendar.openInternetAccountsSettings() }
                             .buttonStyle(.plain)
                             .font(.ui(11, .medium))
-                            .foregroundStyle(Theme.defaultAccent)
+                            .foregroundStyle(settings.accent)
                     }
                 }
 
@@ -198,6 +206,39 @@ private struct SettingsRow<Accessory: View>: View {
     }
 }
 
+/// A row of preset accents rather than a system `ColorPicker`: that opens
+/// `NSColorPanel`, a separate window this non-activating accessory panel can't
+/// reliably front without stealing focus from whatever you were typing in.
+private struct AccentSwatches: View {
+    @Binding var selection: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(Theme.accentPresets, id: \.self) { hex in
+                let isSelected = selection == hex
+                Button {
+                    withAnimation(.spring(response: 0.28, dampingFraction: 0.8)) {
+                        selection = hex
+                    }
+                } label: {
+                    ZStack {
+                        Circle()
+                            .stroke(Theme.textPrimary.opacity(0.9), lineWidth: 1.5)
+                            .frame(width: 20, height: 20)
+                            .opacity(isSelected ? 1 : 0)
+                        Circle()
+                            .fill(Color(hex: hex) ?? Theme.defaultAccent)
+                            .frame(width: isSelected ? 13 : 15, height: isSelected ? 13 : 15)
+                    }
+                    .frame(width: 22, height: 22)
+                    .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
 private struct MinuteStepper: View {
     @Binding var value: Int
     let range: ClosedRange<Int>
@@ -227,11 +268,11 @@ private struct MinuteStepper: View {
 }
 
 private extension Toggle {
-    func settingsToggle() -> some View {
+    func settingsToggle(tint: Color = Theme.defaultAccent) -> some View {
         self
             .labelsHidden()
             .toggleStyle(.switch)
             .controlSize(.mini)
-            .tint(Theme.defaultAccent)
+            .tint(tint)
     }
 }

@@ -78,7 +78,7 @@ It only grows as wide as it needs to be, and surfaces things without being opene
 
 - Album art and a live equalizer while music plays
 - A running timer countdown
-- A meeting starting within 15 minutes, with a countdown
+- A meeting starting within 15 minutes, with a countdown — tap its ✕ to dismiss it
 - Battery on plug/unplug, and AirPods battery on connect
 
 ## Gestures
@@ -89,6 +89,16 @@ It only grows as wide as it needs to be, and surfaces things without being opene
 | Two-finger swipe **up** | Close |
 | Swipe **left / right** on the collapsed pill | Previous / next track |
 | Click | Also opens — hover-to-open is off by default, enable it in Settings |
+
+## Settings
+
+The gear in the top-right of the open panel.
+
+- **Accent colour** — eight swatches. What everything highlights with: the Join button,
+  the day dots in the calendar, the player's progress bar. Album art still wins while
+  *Accent from album art* is on; the swatch is what it falls back to.
+- Hover behaviour, swipe sensitivity, and launch at login.
+- Which widgets get a slot in the rail, and the timer's focus/break lengths.
 
 ## Requirements
 

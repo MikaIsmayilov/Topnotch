@@ -108,7 +108,7 @@ struct SettingsView: View {
                 }
 
                 SettingsSection(title: "About") {
-                    SettingsRow(title: "Topnotch", subtitle: "Version 1.0 · built for the 14\" MacBook Pro notch", divider: false) {
+                    SettingsRow(title: "Topnotch", subtitle: "Version \(Self.version) · built for the 14\" MacBook Pro notch", divider: false) {
                         Button("Quit") { NSApplication.shared.terminate(nil) }
                             .buttonStyle(.plain)
                             .font(.ui(11, .medium))
@@ -119,6 +119,10 @@ struct SettingsView: View {
             .padding(.bottom, 4)
         }
     }
+
+    /// Read from the bundle rather than written out here, so it can't drift from the
+    /// version the app actually ships as.
+    private static let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
 
     private func widgetBinding(for tab: NotchTab) -> Binding<Bool> {
         Binding(

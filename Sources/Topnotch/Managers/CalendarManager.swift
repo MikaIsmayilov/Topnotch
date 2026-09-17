@@ -100,12 +100,21 @@ final class CalendarManager: NSObject, ObservableObject {
 
     /// The next timed meeting starting within the window, or one already under way.
     /// All-day events are excluded — they aren't something you need to walk into.
-    func imminentMeeting(now: Date = Date()) -> EKEvent? {
+    /// Anything the user has waved away is skipped, so the meeting after it can surface.
+    func imminentMeeting(now: Date = Date(), ignoring dismissed: Set<String> = []) -> EKEvent? {
         events.first { event in
             guard !event.isAllDay else { return false }
             guard event.endsAt > now else { return false }
+            guard !dismissed.contains(Self.dismissKey(for: event)) else { return false }
             return event.startsAt.timeIntervalSince(now) <= Self.imminentWindow
         }
+    }
+
+    /// Survives a reload — EKEvent objects don't — while still telling two occurrences of
+    /// a recurring event apart, which `eventIdentifier` alone does not.
+    static func dismissKey(for event: EKEvent) -> String {
+        let identifier = event.eventIdentifier ?? event.title ?? "event"
+        return "\(identifier)@\(Int(event.startsAt.timeIntervalSinceReferenceDate))"
     }
 
     /// Pulls a video-call link out of wherever the organiser happened to put it.

@@ -128,6 +128,7 @@ struct StatusStrip: View {
                     .font(.ui(10.5, .medium))
                     .lineLimit(1)
                     .fixedSize(horizontal: true, vertical: false)
+                dismissMeetingButton
             }
             .foregroundStyle(meeting.isUrgent ? Color.orange : Theme.textPrimary)
             .padding(.leading, 10)
@@ -159,6 +160,22 @@ struct StatusStrip: View {
             .padding(.trailing, 6)
             .transition(.opacity)
         }
+    }
+
+    /// Lets a meeting you've already seen get out of the way. A Button rather than a tap
+    /// gesture so it swallows the click instead of also opening the panel, which the
+    /// root view opens on any tap.
+    private var dismissMeetingButton: some View {
+        Button { viewModel.dismissMeetingChip() } label: {
+            Image(systemName: "xmark")
+                .font(.ui(7.5, .bold))
+                .foregroundStyle(Theme.textSecondary)
+                .frame(width: NotchViewModel.dismissWidth, height: NotchViewModel.dismissWidth)
+                .background(Circle().fill(Theme.surfaceRaised))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .help("Dismiss this meeting")
     }
 
     @ViewBuilder

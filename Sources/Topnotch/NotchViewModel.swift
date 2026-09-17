@@ -129,6 +129,9 @@ final class NotchViewModel: ObservableObject {
     /// A meeting close enough to matter, surfaced in the collapsed pill.
     @Published private(set) var meetingChip: MeetingChip?
 
+    /// Occurrence keys the user has waved off — see `dismissMeetingChip()`.
+    private var dismissedMeetings: Set<String> = []
+
     private var cancellables = Set<AnyCancellable>()
     private var tabResetWork: DispatchWorkItem?
 
@@ -199,6 +202,7 @@ final class NotchViewModel: ObservableObject {
             if let meeting = meetingChip {
                 left = Self.glyphWidth + Self.contentSpacing
                     + Self.width(of: meeting.pillText, font: Self.chipFont)
+                    + Self.contentSpacing + Self.dismissWidth
                     + Self.edgePadding + Self.cutoutMargin
             } else if info != nil {
                 left = Self.edgePadding + max(0, stripHeight - 12) + Self.cutoutMargin
@@ -220,6 +224,8 @@ final class NotchViewModel: ObservableObject {
     private static let cutoutMargin: CGFloat = 8
 
     private static let glyphWidth: CGFloat = 13
+    /// The meeting chip's dismiss button, which the flank has to make room for.
+    static let dismissWidth: CGFloat = 16
     private static let timerFont = NSFont.monospacedDigitSystemFont(ofSize: 10, weight: .semibold)
     private static let chipFont = NSFont.systemFont(ofSize: 10.5, weight: .medium)
 
@@ -239,11 +245,28 @@ final class NotchViewModel: ObservableObject {
     }
 
     private func refreshMeetingChip() {
-        let chip = calendarManager.imminentMeeting().map(MeetingChip.init(event:))
+        // Dismissals are keyed to an occurrence that eventually passes, so they'd
+        // otherwise pile up for as long as the app runs.
+        dismissedMeetings.formIntersection(
+            Set(calendarManager.upcoming.map(CalendarManager.dismissKey(for:)))
+        )
+        let chip = calendarManager
+            .imminentMeeting(ignoring: dismissedMeetings)
+            .map(MeetingChip.init(event:))
         guard chip != meetingChip else { return }
         withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
             meetingChip = chip
         }
+    }
+
+    /// Clears the pill of the meeting it's showing. The event is gone from the pill for
+    /// good rather than snoozed: the window is only 15 minutes, so a reminder that came
+    /// back would land on top of the meeting you already said you knew about. Anything
+    /// starting behind it takes the slot immediately.
+    func dismissMeetingChip() {
+        guard let chip = meetingChip else { return }
+        dismissedMeetings.insert(chip.id)
+        refreshMeetingChip()
     }
 
     var visibleTabs: [NotchTab] {
@@ -292,3 +315,4 @@ final class NotchViewModel: ObservableObject {
         }
     }
 }
+

@@ -3,11 +3,15 @@ import EventKit
 
 /// A meeting condensed to what fits in the collapsed pill.
 struct MeetingChip: Equatable {
+    /// Identifies the occurrence, not the series, so dismissing today's standup doesn't
+    /// silence tomorrow's.
+    let id: String
     let title: String
     let minutesUntil: Int
     let hasJoinLink: Bool
 
     init(event: EKEvent) {
+        id = CalendarManager.dismissKey(for: event)
         let raw = event.title ?? "Meeting"
         title = raw.count > 18 ? String(raw.prefix(17)) + "…" : raw
         minutesUntil = Int(ceil(event.startsAt.timeIntervalSinceNow / 60))
